@@ -15,8 +15,15 @@ gcc main.c \
   -Wl,-rpath, $WASMEDGE_LIB/libwasmedge.so
 
 
+# buildが失敗
 if [ $? -eq 1 ]; then
   echo "Failed to build"
+  exit 1
+fi
+
+# sl.wasmがない
+if [ ! -f ./sl.wasm ]; then
+  echo "Not found sl.wasm"
   exit 1
 fi
 
