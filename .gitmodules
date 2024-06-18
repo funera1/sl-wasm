@@ -1,0 +1,3 @@
+[submodule "ncurses-for-wasm"]
+	path = ncurses-for-wasm
+	url = git@github.com:funera1/ncurses-for-wasm.git
