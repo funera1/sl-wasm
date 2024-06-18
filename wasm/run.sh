@@ -29,4 +29,3 @@ fi
 
 export LD_LIBRARY_PATH=$WASMEDGE_LIB:$LD_LIBRARY_PATH
 ./main ../sl.wasm
-
