@@ -22,11 +22,11 @@ if [ $? -eq 1 ]; then
 fi
 
 # sl.wasmがない
-if [ ! -f ./sl.wasm ]; then
+if [ ! -f ../sl.wasm ]; then
   echo "Not found sl.wasm"
   exit 1
 fi
 
 export LD_LIBRARY_PATH=$WASMEDGE_LIB:$LD_LIBRARY_PATH
-./main
+./main ../sl.wasm
 

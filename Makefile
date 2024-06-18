@@ -24,8 +24,8 @@ sl-js: sl.c sl.h
 
 sl-wasi: sl.c sl.h
 	$(EMCC) $(CFLAGS) -o sl.wasm sl.c \
-		-I/home/funera1/repo/ncurses-6.1/build/include/ \
-		-L/home/funera1/repo/ncurses-6.1/build/lib \
+		-I./ncurses-for-wasm/build/include/ \
+		-L./ncurses-for-wasm/build/lib \
 		-lncurses
 
 clean:

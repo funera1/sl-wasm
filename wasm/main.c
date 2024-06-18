@@ -128,7 +128,7 @@ int RunFromFile(WasmEdge_VMContext *VMCxt) {
   WasmEdge_Result Res;
 
   /* Step 1: Load WASM file. */
-  Res = WasmEdge_VMLoadWasmFromFile(VMCxt, "sl.wasm");
+  Res = WasmEdge_VMLoadWasmFromFile(VMCxt, "../sl.wasm");
   if (!WasmEdge_ResultOK(Res)) {
     printf("Loading phase failed: %s\n", WasmEdge_ResultGetMessage(Res));
     return 1;
