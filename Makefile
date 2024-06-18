@@ -23,7 +23,7 @@ sl-js: sl.c sl.h
 		-lncurses
 
 sl-wasi: sl.c sl.h
-	$(EMCC) $(CFLAGS) -o sl.wasm sl.c \
+	$(EMCC) $(CFLAGS) -g -o sl.wasm sl.c \
 		-I./ncurses-for-wasm/build/include/ \
 		-L./ncurses-for-wasm/build/lib \
 		-lncurses
