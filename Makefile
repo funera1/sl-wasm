@@ -6,7 +6,9 @@
 #	Last Modified: 2014/03/31
 #==========================================
 
+# CC=gcc
 CC=gcc
+EMCC=emcc
 CFLAGS=-O -Wall
 
 all: sl
@@ -14,7 +16,19 @@ all: sl
 sl: sl.c sl.h
 	$(CC) $(CFLAGS) -o sl sl.c -lncurses
 
+sl-js: sl.c sl.h
+	$(EMCC) $(CFLAGS) -o sl.html sl.c \
+		-I/home/funera1/repo/ncurses-6.1/build/include/ \
+		-L/home/funera1/repo/ncurses-6.1/build/lib \
+		-lncurses
+
+sl-wasi: sl.c sl.h
+	$(EMCC) $(CFLAGS) -o sl.wasm sl.c \
+		-I/home/funera1/repo/ncurses-6.1/build/include/ \
+		-L/home/funera1/repo/ncurses-6.1/build/lib \
+		-lncurses
+
 clean:
-	rm -f sl
+	rm -f sl sl.wasm sl.html sl.js
 
 distclean: clean
