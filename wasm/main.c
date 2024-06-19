@@ -102,9 +102,22 @@ WasmEdge_ModuleInstanceContext *CreateEnvModule() {
 WasmEdge_StoreContext *ImportHostModule() {
   WasmEdge_StoreContext *StoreCxt = WasmEdge_StoreCreate();
   WasmEdge_ExecutorContext *ExecCxt = WasmEdge_ExecutorCreate(NULL, NULL);
+
+
+  // Envモジュールの作成＆登録
   WasmEdge_ModuleInstanceContext *HostModCxt = CreateEnvModule();
   WasmEdge_Result Res = 
     WasmEdge_ExecutorRegisterImport(ExecCxt, StoreCxt, HostModCxt);
+  if (!WasmEdge_ResultOK(Res)) {
+    printf("Host module registration failed: %s\n", WasmEdge_ResultGetMessage(Res));
+    return NULL;
+  }
+
+  // Wasiモジュールの作成＆登録
+  WasmEdge_ModuleInstanceContext *WasiModCxt = WasmEdge_ModuleInstanceCreateWASI(
+    NULL, 0, NULL, 0, NULL, 0
+  );
+  Res = WasmEdge_ExecutorRegisterImport(ExecCxt, StoreCxt, WasiModCxt);
   if (!WasmEdge_ResultOK(Res)) {
     printf("Host module registration failed: %s\n", WasmEdge_ResultGetMessage(Res));
     return NULL;
@@ -123,7 +136,9 @@ bool setupConfigure(struct WasmEdge_ConfigureContext *ConfCxt) {
   WasmEdge_ConfigureAddHostRegistration(ConfCxt, WasmEdge_HostRegistration_Wasi);
 }
 
-
+/// @brief ファイルから実行
+/// @param VMCxt 
+/// @return 
 int RunFromFile(WasmEdge_VMContext *VMCxt) {
   WasmEdge_Result Res;
 
@@ -155,24 +170,6 @@ int RunFromFile(WasmEdge_VMContext *VMCxt) {
   }
 
 
-  // export関数を探索
-  // uint32_t FuncNum = WasmEdge_VMGetFunctionListLength(VMCxt);
-  // printf("FuncNum: %d\n", FuncNum);
-  // const uint32_t BUF_LEN = 256;
-  // WasmEdge_String FuncNames[BUF_LEN];
-  // WasmEdge_FunctionTypeContext *FuncTypes[BUF_LEN];
-  // uint32_t RealFuncNum = WasmEdge_VMGetFunctionList(VMCxt, FuncNames, FuncTypes, BUF_LEN);
-
-  // printf("RealFuncNum: %d\n", RealFuncNum);
-
-  // for (uint32_t I = 0; I < RealFuncNum; I++) {
-  //   char Buf[BUF_LEN];
-  //   uint32_t Size = WasmEdge_StringCopy(FuncNames[I], Buf, sizeof(Buf));
-  //   printf("Get exported function string length: %u, name: %s\n", Size,
-  //          Buf);
-  // }
-
-
   /*
    * Step 4: Execute WASM functions. You can execute functions repeatedly
    * after instantiation.
@@ -184,10 +181,12 @@ int RunFromFile(WasmEdge_VMContext *VMCxt) {
   Res = WasmEdge_VMExecute(VMCxt, FuncName, Params, 0, Returns, 0);
   if (WasmEdge_ResultOK(Res)) {
     // printf("Get the result: %d\n", WasmEdge_ValueGetI32(Returns[0]));
+    printf("Succeed\n");
   } else {
     printf("Execution phase failed: %s\n", WasmEdge_ResultGetMessage(Res));
   }
 
+  WasmEdge_StringDelete(FuncName);
 }
 
 
@@ -210,8 +209,7 @@ int main(int Argc, const char* Argv[]) {
   RunFromFile(VMCxt);
 
   /* Resources deallocations. */
-  // WasmEdge_VMDelete(VMCxt);
-  // WasmEdge_ConfigureDelete(ConfCxt);
-  // WasmEdge_StringDelete(FuncName);
+  WasmEdge_VMDelete(VMCxt);
+  WasmEdge_ConfigureDelete(ConfCxt);
   return 0;
 }
