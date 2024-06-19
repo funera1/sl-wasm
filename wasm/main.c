@@ -133,7 +133,7 @@ WasmEdge_StoreContext *ImportHostModule() {
 bool setupConfigure(struct WasmEdge_ConfigureContext *ConfCxt) {
   // ConfCxt->Conf.getStatisticsConfigure().setRestoreFlag(true);
   // WasmEdge_ConfigureStatisticsSetRestoreFlag(ConfCxt, true);
-  WasmEdge_ConfigureAddHostRegistration(ConfCxt, WasmEdge_HostRegistration_Wasi);
+  // WasmEdge_ConfigureAddHostRegistration(ConfCxt, WasmEdge_HostRegistration_Wasi);
 }
 
 /// @brief ファイルから実行
