@@ -1,6 +1,7 @@
 #include <wasmedge/wasmedge.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 
 /* This function can add 2 i32 values and return the result. */
 WasmEdge_Result __syscall_faccessat(void *v, const WasmEdge_CallingFrameContext *c,
@@ -203,9 +204,12 @@ int main(int Argc, const char* Argv[]) {
   /* Create the configure context and add the WASI support. */
   /* This step is not necessary unless you need WASI support. */
   
-  // ConfCxtの中にDumpFlagやRestoreFlagがある
+  // Rstore mode
   WasmEdge_ConfigureContext *ConfCxt = WasmEdge_ConfigureCreate();
-  setupConfigure(ConfCxt);
+  if (Argc > 1 && strcmp(Argv[1], "--restore") == 0) {
+    // printf("restore mode\n");
+    WasmEdge_ConfigureStatisticsSetRestoreFlag(ConfCxt, true);
+  }
 
   // Storeを作成し、ホストモジュールを登録
   WasmEdge_StoreContext *StoreCxt = ImportHostModule();

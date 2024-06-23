@@ -3,6 +3,30 @@ WASMEDGE_DIR=$(pwd)/../funera1-WasmEdge/build
 WASMEDGE_LIB=$WASMEDGE_DIR/lib/api
 WASMEDGE_INCLUDE=$WASMEDGE_DIR/include/api
 
+local_mode=false
+restore_mode=false
+
+while (( $# > 0 ))
+do
+  case $1 in
+    -r)
+      restore_mode=true
+      ;;
+    -l)
+      local_mode=true
+      ;;
+    -h)
+      echo "-l: local exec"
+      echo "-r: restore"
+      exit 1
+      ;;
+    *)
+      echo "argument $1"
+      ;;
+  esac
+  shift
+done
+
 
 # export C_INCLUDE_PATH=$WASMEDGE_INCLUDE:$C_INCLUDE_PATH
 export CPATH=$WASMEDGE_INCLUDE
@@ -28,7 +52,14 @@ if [ ! -f ../sl.wasm ]; then
 fi
 
 export LD_LIBRARY_PATH=$WASMEDGE_LIB:$LD_LIBRARY_PATH
-./run-sl-wasm
-if [ $? -eq 1 ]; then
+clear
+if "${restore_mode}"; then
+  ./run-sl-wasm --restore
+else
+  ./run-sl-wasm
+fi
+
+
+if "${local_mode}" && [ $? -eq 1 ]; then
   ./send.sh
 fi
