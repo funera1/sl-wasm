@@ -3,7 +3,7 @@
 #include <errno.h>
 
 /* This function can add 2 i32 values and return the result. */
-WasmEdge_Result __syscall_faccessat(void *, const WasmEdge_CallingFrameContext *,
+WasmEdge_Result __syscall_faccessat(void *v, const WasmEdge_CallingFrameContext *c,
                     const WasmEdge_Value *In, WasmEdge_Value *Out) {
   /*
   * Params: {i32, i32, i32, i32}
@@ -16,7 +16,7 @@ WasmEdge_Result __syscall_faccessat(void *, const WasmEdge_CallingFrameContext *
   return WasmEdge_Result_Success;
 }
 
-WasmEdge_Result __syscall__newselect(void *, const WasmEdge_CallingFrameContext *,
+WasmEdge_Result __syscall__newselect(void *v, const WasmEdge_CallingFrameContext *c,
                     const WasmEdge_Value *In, WasmEdge_Value *Out) {
   /*
   * Params: {i32, i32, i32, i32, i32}
