@@ -8,8 +8,6 @@ if [ ! -e $WATCH_FILE ]; then
   touch $WATCH_FILE
 fi
 
-inotifywait -m $WATCH_FILE
-
 # inotifywaitでディレクトリを監視
 inotifywait -m -e modify,create "$WATCH_FILE" | while read path action file; do
     # zipを解答
