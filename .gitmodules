@@ -1,3 +1,7 @@
 [submodule "ncurses-for-wasm"]
 	path = ncurses-for-wasm
 	url = git@github.com:funera1/ncurses-for-wasm.git
+[submodule "funera1-WasmEdge"]
+	path = funera1-WasmEdge
+	url = git@github.com:oss-fun/funera1-WasmEdge.git
+	branch = feature/c-api-migration
