@@ -1,5 +1,5 @@
 #!/bin/bash
-WASMEDGE_DIR=/home/funera1/repo/fWasmEdge1/build
+WASMEDGE_DIR=$(pwd)/../funera1-WasmEdge/build
 WASMEDGE_LIB=$WASMEDGE_DIR/lib/api
 WASMEDGE_INCLUDE=$WASMEDGE_DIR/include/api
 
