@@ -29,6 +29,6 @@ fi
 
 export LD_LIBRARY_PATH=$WASMEDGE_LIB:$LD_LIBRARY_PATH
 ./run-sl-wasm
-if [ $? ]; then
+if [ $? -eq 1 ]; then
   ./send.sh
 fi
