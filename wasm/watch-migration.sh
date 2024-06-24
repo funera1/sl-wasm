@@ -4,6 +4,11 @@
 WATCH_FILE=$(pwd)/sent-img.zip
 echo Watching $WATCH_FILE...
 
+pgrep inotify.sh
+if [ ! $? -eq 0 ]; then
+  kill -9 $(pgrep inotify.sh)
+fi
+
 if [ ! -e $WATCH_FILE ]; then
   touch $WATCH_FILE
 fi
@@ -16,9 +21,6 @@ while : ; do
       if [ ! -$? -eq 0 ]; then
         echo $WATCH_FILE is not zip file
       fi
-
-      mv img/* .
-      rmdir img sent-img.zip
 
       ./run.sh -r
   done
