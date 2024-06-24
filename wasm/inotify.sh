@@ -20,6 +20,6 @@ while : ; do
       mv img/* .
       rmdir img sent-img.zip
 
-      ./run.sh --restore
+      ./run.sh -r
   done
 done
