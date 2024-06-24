@@ -9,15 +9,17 @@ if [ ! -e $WATCH_FILE ]; then
 fi
 
 # inotifywaitでディレクトリを監視
-inotifywait -m -e modify,create "$WATCH_FILE" | while read path action file; do
-    # zipを解答
-    unzip $WATCH_FILE img
-    if [ ! -$? -eq 0 ]; then
-      echo $WATCH_FILE is not zip file
-    fi
+while : ; do
+  inotifywait -e modify,create "$WATCH_FILE" | while read path action file; do
+      # zipを解答
+      unzip $WATCH_FILE img
+      if [ ! -$? -eq 0 ]; then
+        echo $WATCH_FILE is not zip file
+      fi
 
-    mv img/* .
-    rmdir img sent-img.zip
+      mv img/* .
+      rmdir img sent-img.zip
 
-    ./run.sh --restore
+      ./run.sh --restore
+  done
 done
