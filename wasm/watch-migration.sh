@@ -24,6 +24,6 @@ while : ; do
 
       cp img/* .
       rm ./sent-img.zip
-      ./run.sh -r
+      ./run.sh -r -l
   done
 done
