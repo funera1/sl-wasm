@@ -35,7 +35,7 @@ fi
 
 # Ping the IP address and display the result
 echo "Pinging IP address: $IP_ADDRESS"
-ping -w 100 "$IP_ADDRESS"  # Ping the IP address with 3 packets
+ping -c 1 -w 10 "$IP_ADDRESS"
 if [ $? -eq 0 ]; then
   echo "IP address $IP_ADDRESS is reachable."
 else
