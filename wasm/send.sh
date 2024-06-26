@@ -1,7 +1,8 @@
 # 圧縮
+rm -rf img
+rm img.zip
 mkdir img
 cp *.img img
-rm img.zip
 zip -r img.zip img
 
 # 疎通確認
@@ -45,5 +46,6 @@ fi
 
 # 送る
 echo "Sending file..."
+scp ./*table* osc-sl:~/repo/sl-wasm/wasm
 scp ../sl.wasm osc-sl:~/repo/sl-wasm
 scp img.zip osc-sl:~/repo/sl-wasm/wasm/sent-img.zip
