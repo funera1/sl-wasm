@@ -18,14 +18,14 @@ fi
 
 function restore () {
   # zipを解答
-  unzip $WATCH_FILE
+  echo Unzip...
+  unzip -o $WATCH_FILE
   if [ ! -$? -eq 0 ]; then
     echo $WATCH_FILE is not zip file
   fi
 
-  cp img/* .
+  echo Restoring...
   ./run.sh -r -l
-  rm -rf img
 }
 
 # inotifywaitでディレクトリを監視

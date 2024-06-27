@@ -1,9 +1,6 @@
 # 圧縮
-rm -rf img
 rm img.zip
-mkdir img
-cp *.img img
-zip -r img.zip img
+zip img.zip *.img
 
 # 疎通確認
 # SSH config file path
