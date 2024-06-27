@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo Building main...
+./build.sh
+
 # 監視するディレクトリを指定
 WATCH_FILE=$(pwd)/sent-img.zip
 echo Watching $WATCH_FILE...
