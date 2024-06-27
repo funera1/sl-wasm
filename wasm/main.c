@@ -1,4 +1,5 @@
 #include <wasmedge/wasmedge.h>
+#include<ncurses.h>
 #include <stdio.h>
 #include <errno.h>
 #include <string.h>
@@ -209,6 +210,7 @@ int RunFromFile(WasmEdge_VMContext *VMCxt) {
 int main(int Argc, const char* Argv[]) {
   /* Create the configure context and add the WASI support. */
   /* This step is not necessary unless you need WASI support. */
+  initscr();
   
   // Rstore mode
   WasmEdge_ConfigureContext *ConfCxt = WasmEdge_ConfigureCreate();
@@ -230,5 +232,8 @@ int main(int Argc, const char* Argv[]) {
   /* Resources deallocations. */
   WasmEdge_VMDelete(VMCxt);
   WasmEdge_ConfigureDelete(ConfCxt);
+
+
+  endwin();
   return 0;
 }
