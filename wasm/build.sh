@@ -1,3 +1,10 @@
+WASMEDGE_DIR=$(pwd)/../funera1-WasmEdge/build
+WASMEDGE_LIB=$WASMEDGE_DIR/lib/api
+WASMEDGE_INCLUDE=$WASMEDGE_DIR/include/api
+
+local_mode=0
+restore_mode=0
+
 # export C_INCLUDE_PATH=$WASMEDGE_INCLUDE:$C_INCLUDE_PATH
 export CPATH=$WASMEDGE_INCLUDE
 gcc main.c \
