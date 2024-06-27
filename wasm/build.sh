@@ -16,7 +16,7 @@ fi
 export CPATH=$WASMEDGE_INCLUDE
 gcc main.c \
   -g                  \
-  -DX64=1       \
+  -DX64=$is_x64       \
   -o run-sl-wasm      \
   -I$WASMEDGE_INCLUDE \
   -L$WASMEDGE_LIB     \
