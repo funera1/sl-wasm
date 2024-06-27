@@ -4,12 +4,12 @@ WASMEDGE_INCLUDE=$WASMEDGE_DIR/include/api
 
 arch=$(uname -m)
 
-if [ "$arch" == "x86_64" ]; then
+if [ $arch = "x86_64" ]; then
   is_x64=1
   echo "This is a x86_64 system."
 else
   is_x64=0
-    echo "Unknown architecture: $arch"
+  echo "Unknown architecture: $arch"
 fi
 
 # export C_INCLUDE_PATH=$WASMEDGE_INCLUDE:$C_INCLUDE_PATH
