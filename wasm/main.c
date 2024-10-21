@@ -1,6 +1,7 @@
 #include <wasmedge/wasmedge.h>
 #include <stdio.h>
 #include <errno.h>
+#include <string.h>
 
 /* This function can add 2 i32 values and return the result. */
 WasmEdge_Result __syscall_faccessat(void *, const WasmEdge_CallingFrameContext *,
@@ -137,9 +138,11 @@ WasmEdge_StoreContext *ImportHostModule() {
 /// @brief restore modeの設定をする
 /// @param ConfCxt 
 /// @return 
-bool setupConfigure(struct WasmEdge_ConfigureContext *ConfCxt) {
+bool setupConfigure(struct WasmEdge_ConfigureContext *ConfCxt, bool is_resotre) {
   // ConfCxt->Conf.getStatisticsConfigure().setRestoreFlag(true);
-  // WasmEdge_ConfigureStatisticsSetRestoreFlag(ConfCxt, true);
+  if (is_resotre) {
+    WasmEdge_ConfigureStatisticsSetRestoreFlag(ConfCxt, true);
+  }
   // WasmEdge_ConfigureAddHostRegistration(ConfCxt, WasmEdge_HostRegistration_Wasi);
 }
 
@@ -200,10 +203,18 @@ int RunFromFile(WasmEdge_VMContext *VMCxt) {
 int main(int Argc, const char* Argv[]) {
   /* Create the configure context and add the WASI support. */
   /* This step is not necessary unless you need WASI support. */
+
+  // check --restore/-r option
+  bool is_restore = false;
+  if (Argc == 2) {
+      if (strcmp(Argv[1], "-r") || strcmp(Argv[1], "--restore")) {
+          is_restore = true;
+      }
+  }
   
   // ConfCxtの中にDumpFlagやRestoreFlagがある
   WasmEdge_ConfigureContext *ConfCxt = WasmEdge_ConfigureCreate();
-  setupConfigure(ConfCxt);
+  setupConfigure(ConfCxt, is_restore);
 
   // Storeを作成し、ホストモジュールを登録
   WasmEdge_StoreContext *StoreCxt = ImportHostModule();
