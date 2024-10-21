@@ -21,9 +21,11 @@ gcc main.c \
 
 # buildが失敗
 if [ $? -eq 1 ]; then
-  echo "Failed to build"
+  echo "[ERROR] Failed to build"
   exit 1
 fi
+
+echo "Success build"
 
 # # sl.wasmがない
 # if [ ! -f ../sl.wasm ]; then
