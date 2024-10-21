@@ -1,8 +1,12 @@
 #!/bin/bash
-WASMEDGE_DIR=/home/funera1/repo/fWasmEdge1/build
+WASMEDGE_DIR=/home/funera1/repo/funera1-WasmEdge/build
 WASMEDGE_LIB=$WASMEDGE_DIR/lib/api
 WASMEDGE_INCLUDE=$WASMEDGE_DIR/include/api
 
+if [ ! -d $WASMEDGE_DIR ]; then
+    echo "[ERROR] Not found ${WASMEDGE_DIR}"
+    exit 1
+fi
 
 # export C_INCLUDE_PATH=$WASMEDGE_INCLUDE:$C_INCLUDE_PATH
 export CPATH=$WASMEDGE_INCLUDE
