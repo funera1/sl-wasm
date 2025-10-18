@@ -1,3 +1,6 @@
 [submodule "ncurses-for-wasm"]
 	path = ncurses-for-wasm
 	url = git@github.com:funera1/ncurses-for-wasm.git
+[submodule "third_party/funera1-WasmEdge"]
+	path = third_party/funera1-WasmEdge
+	url = git@github.com:oss-fun/funera1-WasmEdge.git
