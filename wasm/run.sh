@@ -15,6 +15,8 @@ FILE_GLOB=${FILE_GLOB:-'*.img'}
 TRANSFER_ON_SUCCESS=${TRANSFER_ON_SUCCESS:-true}
 # Control whether to perform the transfer. Can be overridden by -n/--no-transfer
 TRANSFER_ENABLED=true
+# Whether to forward -r (restore) to the inner program when run.sh is invoked with -r
+FORWARD_RESTORE=false
 
 log() { printf "[%s] %s\n" "$(date +%H:%M:%S)" "$*"; }
 
@@ -36,10 +38,19 @@ ensure_prereqs() {
 run_main() {
   # Run the built binary from build/ if present, otherwise fall back to ./main
   set +e
+  clear
   if [ -x build/main ]; then
-    ./build/main "$@" 2> /dev/null
+    if [ "$FORWARD_RESTORE" = "true" ]; then
+      ./build/main -r 2> /dev/null
+    else
+      ./build/main 2> /dev/null
+    fi
   elif [ -x ./main ]; then
-    ./main "$@" 2> /dev/null
+    if [ "$FORWARD_RESTORE" = "true" ]; then
+      ./main -r 2> /dev/null
+    else
+      ./main 2> /dev/null
+    fi
   else
     log "Executable not found: build/main or ./main"
     exit 1
@@ -104,6 +115,11 @@ main() {
   ensure_prereqs
 
   log "Starting main"
+  if [ "${DEBUG:-}" = "1" ]; then
+    log "DEBUG: forwarding args=( $* )"
+    log "DEBUG: PWD=$(pwd)"
+    log "DEBUG: LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-}" 
+  fi
   run_main "$@"
   rc=$?
   log "main exited with $rc"
@@ -120,6 +136,7 @@ main() {
 # should come after `--` or be passed after these script options.
 # Supported:
 #   -n, --no-transfer   : run main but do not transfer files after completion
+#   -r                  : forward -r to the program (restore mode)
 #   -h, --help          : show usage
 parse_script_args() {
   script_args=()
@@ -141,9 +158,21 @@ Any arguments after -- are passed to the program that run.sh executes.
 EOF
         exit 0
         ;;
+      -r)
+        FORWARD_RESTORE=true
+        shift
+        ;;
+      --debug)
+        # enable debug logging
+        DEBUG=1
+        shift
+        ;;
       --)
+        # Stop parsing here; collect remaining args for the program
         shift
         script_args+=("$@")
+        # Clear positional parameters so they are not appended again below
+        set --
         break
         ;;
       -* )
@@ -167,4 +196,21 @@ EOF
 
 parse_script_args "$@"
 
-main "${MAIN_ARGS[@]:-}"
+# Build the argument list to pass to main. If FORWARD_RESTORE is set and
+# the user didn't already pass -r, prepend -r.
+PASS_ARGS=("${MAIN_ARGS[@]:-}")
+if [ "$FORWARD_RESTORE" = "true" ]; then
+  found=false
+  for a in "${PASS_ARGS[@]:-}"; do
+    if [ "$a" = "-r" ]; then
+      found=true
+      break
+    fi
+  done
+  if [ "$found" = "false" ]; then
+    PASS_ARGS=("-r" "${PASS_ARGS[@]:-}")
+  fi
+fi
+
+# Invoke main with the constructed args
+main 

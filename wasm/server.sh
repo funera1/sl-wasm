@@ -5,5 +5,5 @@ BASEDIR="$(cd "$(dirname "$0")" && pwd)"
 FILE_TO_WATCH="$BASEDIR/memory.img"
 
 while inotifywait -e modify "$FILE_TO_WATCH"; do
-    bash "$BASEDIR/run.sh" -n -- -r
+    bash "$BASEDIR/run.sh" -n -r
 done
