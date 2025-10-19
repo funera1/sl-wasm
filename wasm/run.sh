@@ -31,9 +31,9 @@ clear
 # Run the built binary from build/ if present, otherwise fall back to ./main
 set +e
 if [ -x build/main ]; then
-  build/main "${1:-}"
+  build/main "$@" 2> /dev/null
 elif [ -x ./main ]; then
-  ./main "${1:-}"
+  ./main "$@" 2> /dev/null
 else
   echo "Executable not found: build/main or ./main"
   exit 1
