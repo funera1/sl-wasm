@@ -4,3 +4,6 @@
 [submodule "third_party/funera1-WasmEdge"]
 	path = third_party/funera1-WasmEdge
 	url = git@github.com:oss-fun/funera1-WasmEdge.git
+[submodule "funera1-WasmEdge"]
+	path = funera1-WasmEdge
+	url = git@github.com:oss-fun/funera1-WasmEdge.git
