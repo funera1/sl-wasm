@@ -3,7 +3,7 @@
 
 # Resolve script directory so the script works when invoked from any cwd
 BASEDIR="$(cd "$(dirname "$0")" && pwd)"
-WASMEDGE_DIR="$BASEDIR/../third_party/funera1-WasmEdge/build"
+WASMEDGE_DIR="$BASEDIR/../funera1-WasmEdge/build"
 WASMEDGE_LIB="$WASMEDGE_DIR/lib/api"
 
 if [ ! -d "$WASMEDGE_DIR" ]; then
