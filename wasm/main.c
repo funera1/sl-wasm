@@ -145,6 +145,7 @@ bool setupConfigure(WasmEdge_ConfigureContext *ConfCxt, bool is_restore) {
   (void)ConfCxt;
   if (is_restore) {
     // restore requested but not supported in this C API version -> no-op
+    WasmEdge_ConfigureStatisticsSetRestoreFlag(ConfCxt, true);
   }
 
   // WasmEdge_ConfigureAddHostRegistration(ConfCxt, WasmEdge_HostRegistration_Wasi);

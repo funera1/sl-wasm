@@ -23,7 +23,7 @@ export LD_LIBRARY_PATH="$WASMEDGE_LIB${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH"
 # Config (can be set in environment)
 # Use SSH config host alias 'openlab-raspi' by default.
 REMOTE_HOST=${REMOTE_HOST:-openlab-raspi}
-REMOTE_PATH=${REMOTE_PATH:-}
+REMOTE_PATH=${REMOTE_PATH:-sl-wasm/wasm}
 FILE_GLOB=${FILE_TO_TRANSFER:-'*.img'}
 TRANSFER_ON_SUCCESS=${TRANSFER_ON_SUCCESS:-true}
 
