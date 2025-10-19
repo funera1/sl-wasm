@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 11)
 
 # Default WasmEdge build dir (same as original build.sh). Can be overridden with -DWASMEDGE_DIR=...
 if(NOT DEFINED WASMEDGE_DIR)
-  set(WASMEDGE_DIR "${CMAKE_SOURCE_DIR}/../third_party/funera1-WasmEdge/build")
+  set(WASMEDGE_DIR "${CMAKE_SOURCE_DIR}/../funera1-WasmEdge/build")
 endif()
 
 set(WASMEDGE_INCLUDE "${WASMEDGE_DIR}/include/api" CACHE PATH "WasmEdge include directory")
