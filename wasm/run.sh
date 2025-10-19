@@ -1,76 +1,113 @@
 #!/bin/bash
-# set -eo pipefail
+# set -euo pipefail
 
 # Resolve script directory so the script works when invoked from any cwd
 BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$BASEDIR"
+
 WASMEDGE_DIR="$BASEDIR/../funera1-WasmEdge/build"
 WASMEDGE_LIB="$WASMEDGE_DIR/lib/api"
 
-if [ ! -d "$WASMEDGE_DIR" ]; then
-  echo "[ERROR] Not found $WASMEDGE_DIR"
-  exit 1
-fi
-
-if [ ! -f ../sl.wasm ]; then
-  echo "Not found ../sl.wasm"
-  exit 1
-fi
-
-# export LD_LIBRARY_PATH="$WASMEDGE_LIB${LD_LIBRARY_PATH:-}"
-# export LD_LIBRARY_PATH="$WASMEDGE_LIB${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH"
-export LD_LIBRARY_PATH="$WASMEDGE_LIB${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH"
-
-# Config (can be set in environment)
-# Use SSH config host alias 'openlab-raspi' by default.
 REMOTE_HOST=${REMOTE_HOST:-openlab-raspi}
 REMOTE_PATH=${REMOTE_PATH:-sl-wasm/wasm}
-FILE_GLOB=${FILE_TO_TRANSFER:-'*.img'}
+# FILE_GLOB can be set externally (e.g. FILE_GLOB='*.img')
+FILE_GLOB=${FILE_GLOB:-'*.img'}
 TRANSFER_ON_SUCCESS=${TRANSFER_ON_SUCCESS:-true}
 
-clear
-# Run the built binary from build/ if present, otherwise fall back to ./main
-set +e
-if [ -x build/main ]; then
-  build/main "$@" 2> /dev/null
-elif [ -x ./main ]; then
-  ./main "$@" 2> /dev/null
-else
-  echo "Executable not found: build/main or ./main"
-  exit 1
-fi
-RC=$?
-set -e
+log() { printf "[%s] %s\n" "$(date +%H:%M:%S)" "$*"; }
 
-if [ -z "$REMOTE_HOST" ]; then
-  echo "REMOTE_HOST not set; skipping transfer. (main exit $RC)"
-  exit $RC
-fi
+ensure_prereqs() {
+  if [ ! -d "$WASMEDGE_DIR" ]; then
+    log "[ERROR] WasmEdge build dir not found: $WASMEDGE_DIR"
+    exit 1
+  fi
 
-if [ "$TRANSFER_ON_SUCCESS" = "true" ] && [ "$RC" -ne 0 ]; then
-  echo "main failed and TRANSFER_ON_SUCCESS=true; skipping transfer."
-  exit $RC
-fi
+  if [ ! -f "$BASEDIR/../sl.wasm" ]; then
+    log "[ERROR] Not found $BASEDIR/../sl.wasm"
+    exit 1
+  fi
 
-# expand glob
-shopt -s nullglob
-files=( $FILE_GLOB )
-if [ ${#files[@]} -eq 0 ]; then
-  echo "No files to transfer matching: $FILE_GLOB"
-  exit $RC
-fi
+  # Export LD_LIBRARY_PATH safely
+  export LD_LIBRARY_PATH="$WASMEDGE_LIB${LD_LIBRARY_PATH:+:}$LD_LIBRARY_PATH"
+}
 
-if [ -n "$REMOTE_PATH" ]; then
-  echo "Transferring ${#files[@]} file(s) to ${REMOTE_HOST}:${REMOTE_PATH}"
-  scp "${files[@]}" "${REMOTE_HOST}:${REMOTE_PATH}"
-else
-  echo "Transferring ${#files[@]} file(s) to ${REMOTE_HOST}: (remote home)"
-  scp "${files[@]}" "${REMOTE_HOST}:"
-fi
+run_main() {
+  # Run the built binary from build/ if present, otherwise fall back to ./main
+  set +e
+  if [ -x build/main ]; then
+    ./build/main "$@"
+  elif [ -x ./main ]; then
+    ./main "$@"
+  else
+    log "Executable not found: build/main or ./main"
+    exit 1
+  fi
+  rc=$?
+  set -e
+  return $rc
+}
 
-SCP_RC=$?
-if [ $SCP_RC -ne 0 ]; then
-  echo "scp failed with code $SCP_RC"
-  exit $SCP_RC
-fi
+transfer_files() {
+  # Exit early if no remote host configured
+  if [ -z "$REMOTE_HOST" ]; then
+    log "REMOTE_HOST not set; skipping transfer. (main exit $1)"
+    return
+  fi
 
-exit $RC
+  if [ "$TRANSFER_ON_SUCCESS" = "true" ] && [ "$1" -ne 0 ]; then
+    log "main failed and TRANSFER_ON_SUCCESS=true; skipping transfer."
+    return
+  fi
+
+  # expand glob
+  shopt -s nullglob
+  files=( $FILE_GLOB )
+  if [ ${#files[@]} -eq 0 ]; then
+    log "No files to transfer matching: $FILE_GLOB"
+    return
+  fi
+
+  # Ensure memory.img is transferred last
+  mem="memory.img"
+  ordered=()
+  for f in "${files[@]}"; do
+    if [ "$(basename "$f")" = "$mem" ]; then
+      continue
+    fi
+    ordered+=("$f")
+  done
+  for f in "${files[@]}"; do
+    if [ "$(basename "$f")" = "$mem" ]; then
+      ordered+=("$f")
+      break
+    fi
+  done
+
+  if [ -n "$REMOTE_PATH" ]; then
+    log "Transferring ${#ordered[@]} file(s) to ${REMOTE_HOST}:${REMOTE_PATH}"
+    scp "${ordered[@]}" "${REMOTE_HOST}:${REMOTE_PATH}"
+  else
+    log "Transferring ${#ordered[@]} file(s) to ${REMOTE_HOST} (remote home)"
+    scp "${ordered[@]}" "${REMOTE_HOST}:"
+  fi
+
+  scp_rc=$?
+  if [ $scp_rc -ne 0 ]; then
+    log "scp failed with code $scp_rc"
+    exit $scp_rc
+  fi
+}
+
+main() {
+  ensure_prereqs
+
+  log "Starting main"
+  run_main "$@"
+  rc=$?
+  log "main exited with $rc"
+
+  transfer_files $rc
+  exit $rc
+}
+
+main "$@"
