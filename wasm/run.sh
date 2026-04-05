@@ -213,4 +213,4 @@ if [ "$FORWARD_RESTORE" = "true" ]; then
 fi
 
 # Invoke main with the constructed args
-main 
+main "${PASS_ARGS[@]}"
